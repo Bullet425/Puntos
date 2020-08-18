@@ -14,7 +14,8 @@ export default ({ children, visibility }) => {
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-    justifyContent: "center",
+    paddingTop: 150,
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.3)",
   },

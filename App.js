@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { Map, Modal, Panel, Input, List } from "./components";
 
@@ -9,6 +9,13 @@ export default function App() {
   const [visibility, setVisibility] = useState(false);
   const [visibilityFilter, setVisibilityFilter] = useState("new_punto");
   const [pointsFilter, setPointsFilter] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, [loading]);
 
   const togglePointsFilter = () => {
     setPointsFilter(!pointsFilter);
@@ -34,9 +41,22 @@ export default function App() {
     setNombre("");
   };
 
+  const handleCancelar = () => {
+    setVisibility(false);
+    setNombre("");
+  };
+
   const handleList = () => {
     setVisibilityFilter("all_puntos");
     setVisibility(true);
+  };
+
+  const eraseItem = (itemName) => {
+    const newPuntos = puntos;
+    const index = newPuntos.findIndex((x) => x.name === itemName);
+    newPuntos.splice(index, 1);
+    setPuntos(newPuntos);
+    setLoading(true);
   };
 
   return (
@@ -59,10 +79,24 @@ export default function App() {
               placeholder="Nombre del Punto"
               onChangeText={handleChangeText}
             />
-            <Button title="Guardar" onPress={handleSubmit} />
+            <View style={styles.buttons}>
+              <Button title="Guardar" onPress={handleSubmit} />
+              <Button title="Cancelar" onPress={handleCancelar} />
+            </View>
           </View>
         ) : (
-          <List data={puntos} closeModal={() => setVisibility(false)} />
+          <>
+            {loading ? (
+              <View style={styles.loading}>
+                <Text>Actualizando...</Text>
+              </View>
+            ) : null}
+            <List
+              data={puntos}
+              eraseItem={eraseItem}
+              closeModal={() => setVisibility(false)}
+            />
+          </>
         )}
       </Modal>
     </View>
@@ -70,6 +104,15 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  loading: {
+    padding: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   form: {
     padding: 15,
   },
